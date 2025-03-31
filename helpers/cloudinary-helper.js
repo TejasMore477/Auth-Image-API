@@ -8,7 +8,7 @@ const uploadToCloudinary = async (filepath) => {
             url : result.secure_url,
             publicId : result.public_id
         };
-        
+
     } catch (error) {
         console.log('Error occured while uploading data to Cloudinary \n', error);
         throw new Error('Error occured while uploading data to Cloudinary')
@@ -16,6 +16,4 @@ const uploadToCloudinary = async (filepath) => {
     }
 };
 
-module.exports = {
-    uploadToCloudinary
-}
+module.exports = {uploadToCloudinary} ;

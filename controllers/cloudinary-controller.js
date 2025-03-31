@@ -1,5 +1,5 @@
 const ImageModel = require('../model/image-model');
-const { uploadToCloudinary } = require('../helpers/cloudinary-helper/js');
+const  {uploadToCloudinary }  = require('../helpers/cloudinary-helper.js');
 
 
 const uploadeImageController = async ( req, res ) => {
