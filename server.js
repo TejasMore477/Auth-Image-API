@@ -7,7 +7,7 @@ const connectToDB = require('./database/db.js');
 const authRouter = require('./routes/auth-routes.js');
 const homeRouter = require('./routes/home-route.js');
 const adminRouter = require('./routes/admin-routes.js');
-
+const uploadImageRouter = require('./routes/image-router.js');
 
 // creating server
 const app = express();
@@ -23,7 +23,7 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/home', homeRouter);
 app.use('/api/adminpage/', adminRouter);
-
+app.use('/api/image', uploadImageRouter);
 
 // listening to port
 app.listen(PORT, () => {
