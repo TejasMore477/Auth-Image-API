@@ -1,6 +1,12 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
+
+// getting the brearer token fom req.header
+// getting the essential part of req
+// verifying  and decomposing the token using JWT.verify
+// pushin the object into req.userInfo 
+
     const authHeader = req.headers['authorization'];
     console.log(authHeader);
 

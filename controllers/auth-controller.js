@@ -5,6 +5,15 @@ const jwt = require('jsonwebtoken');
 
 // these are controllers not middleware so no need to use "next"
 const registerController = async (req, res) => {
+
+    // get the user info from req.body
+    // check if all the fields are complete filled
+    // check if user already exists?
+    // hash the password
+    // register the new user in the db
+
+
+
   try {
     // get the user info from req.body
     const { userName, email, password, role } = req.body;
@@ -64,6 +73,15 @@ const registerController = async (req, res) => {
 };
 
 const loginController = async (req, res) => {
+
+    // get the user info from req.body
+    // check if all the fields are complete filled
+    // check if user already exists?
+    // checking the password  --bcrypt.compare
+    // creating bearer token using jwt.sign
+    // send the brearer token back to frontend using response
+
+
   try {
     // get the user info from req.body
     const { userName, email, password, role } = req.body;

@@ -39,6 +39,32 @@ const uploadeImageController = async ( req, res ) => {
     }
 };
 
+const fetchImageController = async ( req, res ) => {
+    try {
+        const fetchedImages = await ImageModel.find({});
+
+        if(fetchedImages){
+            return res.status(200).json({
+                success :true,
+                message : "Images fetched sucessfully!",
+                data : fetchedImages
+            });
+        }else{
+            return res.status(500).json({
+                success :false,
+                message : "error occured during fetchching images!",
+            });
+        }
+    } catch (error) {
+        console.log('Error occured while fetching the images' , error);
+        res.status(500).json({
+            success :false,
+            message : "internal server error occured while fetching the images"
+        });
+    }
+};
+
 module.exports = {
-    uploadeImageController
+    uploadeImageController,
+    fetchImageController
 };
