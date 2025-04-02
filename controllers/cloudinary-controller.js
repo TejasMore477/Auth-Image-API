@@ -124,8 +124,50 @@ const deleteImageController = async (req, res) => {
     }
 };
 
+const fetchPaginatedImageController = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 2;
+        const skip = (page-1)*limit;
+
+        const sortBy = req.query.sortby || "createdAt";
+        const sortOrder = req.query.sortorder === "asc" ? 1 : -1;
+        const totalImages = await ImageModel.countDocuments();
+        const totalPages = Math.ceil(totalImages/limit);
+
+        const sortObj = {};
+        sortObj[sortBy] = sortOrder;
+
+        const fetchedPaginatedImages = await ImageModel.find().sort(sortObj).skip(skip).limit(limit);
+
+        if (fetchedPaginatedImages) {
+            return res.status(200).json({
+                success: true,
+                currentPage : page,
+                totalPages : totalPages,
+                totalImages : totalImages,
+                message: "paginated Images fetched sucessfully!",
+                data: fetchedPaginatedImages
+            });
+        } else {
+            return res.status(500).json({
+                success: false,
+                message: "error occured during fetchching paginated images!",
+            });
+        }
+    } catch (error) {
+        console.log('Error occured while fetching the paginated images', error);
+        res.status(500).json({
+            success: false,
+            message: "internal server error occured while fetching the paginated images",
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     uploadeImageController,
     fetchImageController,
-    deleteImageController
+    deleteImageController,
+    fetchPaginatedImageController
 };
