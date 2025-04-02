@@ -3,6 +3,12 @@ const  {uploadToCloudinary }  = require('../helpers/cloudinary-helper.js');
 
 
 const uploadeImageController = async ( req, res ) => {
+
+    //check if the responce contails a file that is to be uploades
+    // if yes then pass the req.file.path to the uploade-image-to-cloudinary
+    // -----this helper function will upload the imaeg to cloudinary and retuen an object wih the "image url" and "public id"
+    // then store the url, publicid, and along with the userinfo from the req.userinfo.userid whih is created after the login to the database
+
     try {
         // checking if the file is missing or send with out the image
         if(!req.file){
