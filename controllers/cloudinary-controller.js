@@ -1,8 +1,9 @@
 const ImageModel = require('../model/image-model');
-const  {uploadToCloudinary }  = require('../helpers/cloudinary-helper.js');
+const { uploadToCloudinary } = require('../helpers/cloudinary-helper.js');
+const cloudinaryConfigs = require('../config/cloudinary.js');
 
 
-const uploadeImageController = async ( req, res ) => {
+const uploadeImageController = async (req, res) => {
 
     //check if the responce contails a file that is to be uploades
     // if yes then pass the req.file.path to the uploade-image-to-cloudinary
@@ -11,66 +12,120 @@ const uploadeImageController = async ( req, res ) => {
 
     try {
         // checking if the file is missing or send with out the image
-        if(!req.file){
+        if (!req.file) {
             return res.status(400).json({
-                success : false,
-                message : "file is required! please upload an image"
+                success: false,
+                message: "file is required! please upload an image"
             });
         };
 
         // upload to cloudinary
         const { url, publicId } = await uploadToCloudinary(req.file.path)
-         
+
         //storing the image url and publicIf along the the uploader user to the mongodb
         const newlyUploadedImage = new ImageModel({
             url,
             publicId,
-            uploadedBy : req.userInfo.userId
+            uploadedBy: req.userInfo.userId
         });
 
         await newlyUploadedImage.save();
 
         res.status(200).json({
-            success : true,
-            message : "Image uploaded Successfully!",
-            image : newlyUploadedImage
+            success: true,
+            message: "Image uploaded Successfully!",
+            image: newlyUploadedImage
         });
-    
+
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            success : false,
-            message : "something went wrong! while uploading images please try again!"
+            success: false,
+            message: "something went wrong! while uploading images please try again!"
         });
     }
 };
 
-const fetchImageController = async ( req, res ) => {
+const fetchImageController = async (req, res) => {
     try {
         const fetchedImages = await ImageModel.find({});
 
-        if(fetchedImages){
+        if (fetchedImages) {
             return res.status(200).json({
-                success :true,
-                message : "Images fetched sucessfully!",
-                data : fetchedImages
+                success: true,
+                message: "Images fetched sucessfully!",
+                data: fetchedImages
             });
-        }else{
+        } else {
             return res.status(500).json({
-                success :false,
-                message : "error occured during fetchching images!",
+                success: false,
+                message: "error occured during fetchching images!",
             });
         }
     } catch (error) {
-        console.log('Error occured while fetching the images' , error);
+        console.log('Error occured while fetching the images', error);
         res.status(500).json({
-            success :false,
-            message : "internal server error occured while fetching the images"
+            success: false,
+            message: "internal server error occured while fetching the images",
+            error: error.message
+        });
+    }
+};
+
+const deleteImageController = async (req, res) => {
+    // get the imageid of the image to delete
+    // get the id of the user who wants to delete the image 
+    //check the image exists in database
+    // check is the current user is the uploder to delete the image
+    // delete the image form the cloudinary first
+    // dlete the image fomr the databse
+    try {
+        // get the imageid of the image to delete
+        const imageId = req.params.id;
+        // get the id of the user who wants to delete the image 
+        const userId = req.userInfo.userId;
+        //check get the image exists in database
+        const imagetodelete = await ImageModel.findById(imageId);
+        console.log(imagetodelete, "imagetodelete")
+
+        if (!imagetodelete) {
+            return res.status(404).json({
+                success: false,
+                message: 'No image found in the database to delete'
+            });
+        };
+
+        // check is the current user is the uploder to delete the image
+        if (imagetodelete.uploadedBy.toString() !== userId) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to delete this image"
+            });
+        }
+        // delete the image form the cloudinary first
+        await cloudinaryConfigs.uploader.destroy(imagetodelete.publicId);
+
+        // dlete the image fomr the databse
+        const deletedImage = await ImageModel.findByIdAndDelete(imageId);
+
+        res.status(200).json({
+            success: true,
+            message: "image deleted successfuly!",
+            data: deletedImage
+        });
+
+    } catch (error) {
+        console.log('Error occured while deleting the image', error);
+        res.status(500).json({
+            success: false,
+            message: "internal server error occured while deleting the image",
+            error: error.message
         });
     }
 };
 
 module.exports = {
     uploadeImageController,
-    fetchImageController
+    fetchImageController,
+    deleteImageController
 };
