@@ -35,6 +35,9 @@ Postman
 ## API Testing
 Use Postman to test the endpoints. Screenshots of testing are available in the repo.
 
+## REMINDER ⚠
+Don't forget to add a gitIgnore file to hide your .env file from git.
+
 ## Contributing
 Feel free to fork and contribute! Proper commit messages and structured code make it easy for beginners to understand.
 
